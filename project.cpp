@@ -532,7 +532,7 @@ void overalStatistic(vector<Project> &projects)
 void groupStatistic(vector<Group> &groups, vector<Project> &projects, vector<Submission> &subs)
 {   
     Date now = getDateNow();
-    bool done;
+    bool check, done;
 
     cout << endl;
     cout << setprecision(2);
@@ -541,16 +541,28 @@ void groupStatistic(vector<Group> &groups, vector<Project> &projects, vector<Sub
 
     for (int groupNum = 1; groupNum <= groups.size(); groupNum++)
     {
-        done = false;
+        done = true;
         for (int projectNum = 1; projectNum <= projects.size(); projectNum++)
         {
+            check = false;
             for (int subNum = 0; subNum < subs.size(); subNum++)
+            {
                 if (subs[subNum].projectID == projectNum)
+                {
                     if(subs[subNum].groupID == groupNum)
-                        if(compareTime(projects[projectNum-1].deadline, subs[subNum].submissionDate))
-                            done = true;
+                    {
+                        if(!compareTime(projects[projectNum-1].deadline, subs[subNum].submissionDate))
+                            done = false;
+                        check = true;
+                    }
+                }
+            }  
         }
         if(!done && projects.size() > 0)
+        {
+            cout << "\tGroup " << groupNum << endl;
+        }
+        else if(!check && projects.size() > 0)
         {
             cout << "\tGroup " << groupNum << endl;
         }
