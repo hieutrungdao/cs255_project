@@ -529,6 +529,90 @@ void overalStatistic(vector<Project> &projects)
         outputFile.close();
 }
 
+void overallStatistic(vector<Group> &groups, vector<Project> &projects, vector<Submission> &subs)
+{  
+    Date date;
+
+    ofstream outputFile;
+    outputFile.open("overall_statistic.txt");
+
+    if (!outputFile)
+        cout << "Not found file group.txt in the folder. Cannot save this data.\n";
+    else
+        return;
+
+    cout << "Show statistic from beginning of the course to (DD/MM/YY):\n";
+    date = inputDateValidation();
+
+    Date now = getDateNow();
+    bool done;
+
+    cout << endl;
+    cout << setprecision(2);
+    cout << left << setw(9) << "Group";
+    outputFile << left << setw(9) << "Group";
+    for (int i = 0; i < projects.size(); i++)
+    {
+        if(compareTime(date, projects[i].deadline))
+        {
+            cout  << "Project " << setw(12) << i+1;
+            outputFile  << "Project " << setw(12) << i+1;
+        }
+    }
+    cout << "\n-----------------------------------------------------------------\n";
+    outputFile << "\n-----------------------------------------------------------------\n";
+
+    for (int groupNum = 1; groupNum <= groups.size(); groupNum++)
+    {
+        cout << left << setw(9) << groupNum;
+        outputFile << left << setw(9) << groupNum;
+        for (int projectNum = 1; projectNum <= projects.size(); projectNum++)
+        {
+            if(compareTime(date, projects[projectNum].deadline))
+            {
+                done = false;
+                for (int subNum = 0; subNum < subs.size(); subNum++)
+                {
+                    if (subs[subNum].projectID == projectNum)
+                    {
+                        if(subs[subNum].groupID == groupNum)
+                        {
+                            done = true;
+                            if(compareTime(projects[projectNum-1].deadline, subs[subNum].submissionDate))
+                            {
+                                cout << setw (20) << "On Time";
+                                outputFile << setw (20) << "On Time";
+                            }
+                                
+                            else
+                            {
+                                cout << setw(20) << "Late";
+                                outputFile << setw(20) << "Late";
+                            }
+                        }
+                    }
+                }
+                if(!done)
+                {
+                    if(compareTime(projects[projectNum-1].deadline, now))
+                    {
+                        cout << setw (20) << "Not yet submitted";
+                        outputFile << setw (20) << "Not yet submitted";
+                    }
+                        
+                    else
+                    {
+                        cout << setw (20) << "Not yet submitted";
+                        outputFile << setw (20) << "Not yet submitted";
+                    }
+                }
+            }
+
+        }
+        cout << endl;
+    }
+}
+
 void groupStatistic(vector<Group> &groups, vector<Project> &projects, vector<Submission> &subs)
 {   
     Date now = getDateNow();
@@ -560,11 +644,11 @@ void groupStatistic(vector<Group> &groups, vector<Project> &projects, vector<Sub
         }
         if(!done && projects.size() > 0)
         {
-            cout << "\tGroup " << groupNum << endl;
+            cout << "Group " << groupNum << "\t\tDo not submit on time\n";
         }
         else if(!check && projects.size() > 0)
         {
-            cout << "\tGroup " << groupNum << endl;
+            cout << "Group " << groupNum << "\t\tDo not complete\n";
         }
         if (projects.size() == 0)
         {
@@ -607,7 +691,7 @@ int main()
                 break;
                 
             case 5:
-                overalStatistic(projects);
+                overallStatistic(groups, projects, subs);
                 break;
                 
             case 6:
